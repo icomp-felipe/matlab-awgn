@@ -17,30 +17,37 @@ snrBoaDB   = 10 * log10(snrBoa  );
 snrComumDB = 10 * log10(snrComum);
 snrRuimDB  = 10 * log10(snrRuim );
 
-snrDB = snrBoaDB;
+snrDB = snrRuimDB;
 
 %% Obtendo AWGN do Matlab
 %matlabAWGN = awgn(original, snrDB, 'measured');
 
 %% Importando código fornecido nos slides
+
+% Gamma - representa a relação SNR
+% Aqui está implementada a conversão (dB → escalar) por questões de
+% flexibilidade. Caso a SNR já esteja na forma escalar, basta ignorar esta
+% etapa de cálculo e fazer "gamma = SNR;"
 gamma = 10 ^ (snrDB / 10);
 
-% Cálculo da força do sinal
-p = sum(abs(original) .^ 2) / length(original);
+% Cálculo da potência média do sinal (P)
+p = sum(original .^ 2) / length(original);
 
-% Cálculo da densidade espectral do ruído
+% Cálculo da densidade espectral do ruído (N0)
 n0 = (p / gamma);
 
-% Gerando o sinal de ruído
+% Gerando o sinal de ruído (AWGN)
+% randn(n) - retorna uma matriz nxn de números aleatórios distribuídos
+% normalmente
 ruido = sqrt(n0 / 2) * randn(size(original));
 
 % Por fim, o sinal recebido é a soma do sinal original com o ruído
 recebido = original + ruido;
 
 %% Plotando os sinais
-figure;
 plot(t, original, t, recebido);
 xlabel('Tempo (s)');
 ylabel('Amplitude (V)');
 title('Sinal no tempo');
+legend('Sinal original','Sinal corrompido pelo AWGN');
 zoom xon;
